@@ -106,21 +106,32 @@ var Comment = React.createClass({
                 <h2 className="commentAuthor">
                     {this.props.author}
                 </h2>
-                <textarea>{this.props.text}</textarea>
+                <p>{this.props.text}</p>
                 <CommentEdit />
             </div>
         );
     }
 });
 var CommentEdit = React.createClass({
-    render: function() {
-        return (
-            <div className="commentButton">
-                <button>Edit</button>
-            </div>
-        );
-
+    getInitialState: function() {
+        return {showEditable: false};
     },
+    onClick: function() {
+        this.setState({showEditable: true});
+    },
+    render: function() {
+        if (this.state.showEditable === true) {
+            return (
+                <button>Update</button>
+            );
+        } else {
+            return (
+                <div className="commentButton">
+                    <button onClick={this.onClick}>Edit</button>
+                </div>
+            );
+        }
+    }
 });
 ReactDOM.render(
     <CommentBox url="http://localhost:5000/comments" pollInterval={20000}/>,
