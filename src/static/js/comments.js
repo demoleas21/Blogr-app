@@ -16,7 +16,8 @@ var CommentBox = React.createClass({
         console.log(comment);
         $.ajax({
             url: this.props.url,
-            type: 'json',
+            dataType: 'json',
+            // contentType: 'application/json',
             method: 'POST',
             data: comment,
             success: function(data) {
@@ -106,13 +107,22 @@ var Comment = React.createClass({
                     {this.props.author}
                 </h2>
                 <textarea>{this.props.text}</textarea>
-                <br/>
-                <button>Edit</button>
+                <CommentEdit />
             </div>
         );
     }
 });
+var CommentEdit = React.createClass({
+    render: function() {
+        return (
+            <div className="commentButton">
+                <button>Edit</button>
+            </div>
+        );
+
+    },
+});
 ReactDOM.render(
-    <CommentBox url="http://localhost:5000/comments" pollInterval={2000}/>,
+    <CommentBox url="http://localhost:5000/comments" pollInterval={20000}/>,
     document.getElementById('content')
 );
