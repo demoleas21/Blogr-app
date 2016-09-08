@@ -52,7 +52,7 @@ var CommentList = React.createClass({
             return (
                 <Comment
                     author={comment.author}
-                    key={comment.comment_id}
+                    key={comment.id.toString()}
                     text={comment.comment}
                 />
             );
@@ -106,7 +106,6 @@ var CommentForm = React.createClass({
 });
 var Comment = React.createClass({
     handleCommentSubmit: function(comment) {
-        console.log(comment);
         $.ajax({
             url: "http://localhost:5000/comments/1",
             dataType: 'json',
@@ -145,6 +144,8 @@ var Comment = React.createClass({
         this.onClick();
     },
     render: function() {
+        console.log(this.props.id);
+        console.log(this.props.text);
         if (this.state.showEditable === true) {
             return (
                 <form className="comment" onSubmit={this.handleSubmit}>
