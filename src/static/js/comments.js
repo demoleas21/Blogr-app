@@ -100,19 +100,6 @@ var CommentForm = React.createClass({
     }
 });
 var Comment = React.createClass({
-    render: function() {
-        return (
-            <div className="comment">
-                <h2 className="commentAuthor">
-                    {this.props.author}
-                </h2>
-                <p>{this.props.text}</p>
-                <CommentEdit />
-            </div>
-        );
-    }
-});
-var CommentEdit = React.createClass({
     getInitialState: function() {
         return {showEditable: false};
     },
@@ -122,11 +109,22 @@ var CommentEdit = React.createClass({
     render: function() {
         if (this.state.showEditable === true) {
             return (
-                <button>Update</button>
+                <div className="comment">
+                    <h2 className="commentAuthor">
+                        {this.props.author}
+                    </h2>
+                    <textarea>{this.props.text}</textarea>
+                    <br/>
+                    <button>Update</button>
+                </div>
             );
         } else {
             return (
-                <div className="commentButton">
+                <div className="comment">
+                    <h2 className="commentAuthor">
+                        {this.props.author}
+                    </h2>
+                    <p>{this.props.text}</p>
                     <button onClick={this.onClick}>Edit</button>
                 </div>
             );
