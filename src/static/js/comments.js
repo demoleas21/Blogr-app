@@ -13,11 +13,9 @@ var CommentBox = React.createClass({
         });
     },
     handleCommentSubmit: function(comment) {
-        console.log(comment);
         $.ajax({
             url: this.props.url,
             dataType: 'json',
-            // contentType: 'application/json',
             method: 'POST',
             data: comment,
             success: function(data) {
@@ -46,10 +44,18 @@ var CommentBox = React.createClass({
     }
 });
 var CommentList = React.createClass({
+    getInitialState: function() {
+        return ({data: []})
+    },
     render: function() {
         var commentNodes = this.props.data.map(function(comment) {
             return (
-                <Comment author={comment.author} key={comment.comment_id} text={comment.comment} />
+                <Comment
+                    author={comment.author}
+                    key={comment.id}
+                    id={comment.id.toString()}
+                    text={comment.comment}
+                />
             );
         });
         return (
@@ -63,14 +69,14 @@ var CommentForm = React.createClass({
     getInitialState: function() {
         return {author: '', comment: ''};
     },
-    handleAuthorChange: function(value) {
-        this.setState({author: value.target.value})
+    handleAuthorChange: function(e) {
+        this.setState({author: e.target.value})
     },
-    handleCommentChange: function(value) {
-        this.setState({comment: value.target.value})
+    handleCommentChange: function(e) {
+        this.setState({comment: e.target.value})
     },
-    handleSubmit: function(value) {
-        value.preventDefault();
+    handleSubmit: function(e) {
+        e.preventDefault();
         var author = this.state.author.trim();
         var comment = this.state.comment.trim();
         if (!author || !comment) {
@@ -100,33 +106,65 @@ var CommentForm = React.createClass({
     }
 });
 var Comment = React.createClass({
-    render: function() {
-        return (
-            <div className="comment">
-                <h2 className="commentAuthor">
-                    {this.props.author}
-                </h2>
-                <p>{this.props.text}</p>
-                <CommentEdit />
-            </div>
-        );
-    }
-});
-var CommentEdit = React.createClass({
+    handleCommentSubmit: function(comment) {
+        $.ajax({
+            url: "http://localhost:5000/comments/" + this.props.id,
+            dataType: 'json',
+            method: 'PUT',
+            data: comment,
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error('http://localhost:5000/comments/' + this.props.id, status, err.toString());
+            }.bind(this)
+        });
+    },
     getInitialState: function() {
         return {showEditable: false};
     },
     onClick: function() {
-        this.setState({showEditable: true});
+        if (this.state.showEditable === true) {
+            this.setState({showEditable: false});
+        } else {
+            this.setState({showEditable: true});
+        }
+    },
+    handleCommentChange: function(e) {
+        this.setState({comment: e.target.value});
+    },
+    handleSubmit: function(e) {
+        e.preventDefault();
+        var comment = this.state.comment.trim();
+        if (!comment) {
+            return;
+        }
+        this.handleCommentSubmit({comment: comment});
+        this.onClick();
     },
     render: function() {
         if (this.state.showEditable === true) {
             return (
-                <button>Update</button>
+                <form className="comment" onSubmit={this.handleSubmit}>
+                    <h2 className="commentAuthor">
+                        {this.props.author}
+                    </h2>
+                    <input
+                        defaultValue={this.props.text}
+                        onChange={this.handleCommentChange}
+                    />
+                    <br/>
+                    <input type="submit" value="Update" />
+                    <button onClick={this.onClick}>Cancel</button>
+                </form>
             );
         } else {
             return (
-                <div className="commentButton">
+                <div className="comment">
+                    <h2 className="commentAuthor">
+                        {this.props.author}
+                    </h2>
+                    <p>{this.props.text}</p>
                     <button onClick={this.onClick}>Edit</button>
                 </div>
             );
@@ -134,6 +172,6 @@ var CommentEdit = React.createClass({
     }
 });
 ReactDOM.render(
-    <CommentBox url="http://localhost:5000/comments" pollInterval={20000}/>,
+    <CommentBox url="http://localhost:5000/comments" pollInterval={2000}/>,
     document.getElementById('content')
 );
