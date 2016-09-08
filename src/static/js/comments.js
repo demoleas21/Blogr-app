@@ -120,6 +120,18 @@ var Comment = React.createClass({
             }.bind(this)
         });
     },
+    handleCommentDelete: function() {
+        $.ajax({
+            url: "http://localhost:5000/comments/" + this.props.id,
+            method: 'DELETE',
+            success: function() {
+                this.setState({data: []});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error('http://localhost:5000/comments/' + this.props.id, status, err.toString());
+            }.bind(this)
+        });
+    },
     getInitialState: function() {
         return {showEditable: false};
     },
@@ -145,18 +157,22 @@ var Comment = React.createClass({
     render: function() {
         if (this.state.showEditable === true) {
             return (
-                <form className="comment" onSubmit={this.handleSubmit}>
-                    <h2 className="commentAuthor">
-                        {this.props.author}
-                    </h2>
-                    <input
-                        defaultValue={this.props.text}
-                        onChange={this.handleCommentChange}
-                    />
+                <div>
+                    <form className="comment" onSubmit={this.handleSubmit}>
+                        <h2 className="commentAuthor">
+                            {this.props.author}
+                        </h2>
+                        <input
+                            defaultValue={this.props.text}
+                            onChange={this.handleCommentChange}
+                        />
+                        <br/>
+                        <input type="submit" value="Update" />
+                    </form>
+                    <button onClick={this.handleCommentDelete}>Delete</button>
                     <br/>
-                    <input type="submit" value="Update" />
                     <button onClick={this.onClick}>Cancel</button>
-                </form>
+                </div>
             );
         } else {
             return (
