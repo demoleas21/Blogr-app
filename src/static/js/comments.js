@@ -52,7 +52,8 @@ var CommentList = React.createClass({
             return (
                 <Comment
                     author={comment.author}
-                    key={comment.id.toString()}
+                    key={comment.id}
+                    id={comment.id.toString()}
                     text={comment.comment}
                 />
             );
@@ -107,7 +108,7 @@ var CommentForm = React.createClass({
 var Comment = React.createClass({
     handleCommentSubmit: function(comment) {
         $.ajax({
-            url: "http://localhost:5000/comments/1",
+            url: "http://localhost:5000/comments/" + this.props.id,
             dataType: 'json',
             method: 'PUT',
             data: comment,
@@ -115,7 +116,7 @@ var Comment = React.createClass({
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
-                console.error('http://localhost:5000/comments/1', status, err.toString());
+                console.error('http://localhost:5000/comments/' + this.props.id, status, err.toString());
             }.bind(this)
         });
     },
@@ -131,7 +132,6 @@ var Comment = React.createClass({
     },
     handleCommentChange: function(e) {
         this.setState({comment: e.target.value});
-        console.log(this.state.comment);
     },
     handleSubmit: function(e) {
         e.preventDefault();
@@ -139,13 +139,10 @@ var Comment = React.createClass({
         if (!comment) {
             return;
         }
-        console.log('submit handled');
         this.handleCommentSubmit({comment: comment});
         this.onClick();
     },
     render: function() {
-        console.log(this.props.id);
-        console.log(this.props.text);
         if (this.state.showEditable === true) {
             return (
                 <form className="comment" onSubmit={this.handleSubmit}>
@@ -158,6 +155,7 @@ var Comment = React.createClass({
                     />
                     <br/>
                     <input type="submit" value="Update" />
+                    <button onClick={this.onClick}>Cancel</button>
                 </form>
             );
         } else {
